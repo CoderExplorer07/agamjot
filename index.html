@@ -136,10 +136,12 @@
         }
 
         function collisionDetection() {
+            let allBricksBroken = true;
             for (let c = 0; c < brickColumnCount; c++) {
                 for (let r = 0; r < brickRowCount; r++) {
                     let b = bricks[c][r];
                     if (b.status === 1) {
+                        allBricksBroken = false;
                         if (
                             ballX > b.x &&
                             ballX < b.x + brickWidth &&
@@ -152,6 +154,10 @@
                     }
                 }
             }
+            if (allBricksBroken) {
+                alert("Congratulations! You Win!");
+                isRunning = false;
+            }
         }
 
         function updateBallPosition() {
@@ -163,20 +169,13 @@
             }
             if (ballY - ballRadius < 0) {
                 ballSpeedY = -ballSpeedY;
+            } else if (ballY + ballRadius > canvas.height) {
+                alert("Game Over! You Lost!");
+                isRunning = false;
             } else if (ballY + ballRadius > paddleY && ballX > paddleX && ballX < paddleX + paddleWidth) {
                 ballSpeedY = -ballSpeedY;
             }
         }
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowRight') rightPressed = true;
-            if (e.key === 'ArrowLeft') leftPressed = true;
-        });
-
-        document.addEventListener('keyup', (e) => {
-            if (e.key === 'ArrowRight') rightPressed = false;
-            if (e.key === 'ArrowLeft') leftPressed = false;
-        });
 
         function draw() {
             if (!isRunning) return;
@@ -189,6 +188,9 @@
             updateBallPosition();
             requestAnimationFrame(draw);
         }
+
+        document.addEventListener("keydown", event => { if (event.key === "ArrowRight") rightPressed = true; if (event.key === "ArrowLeft") leftPressed = true; });
+        document.addEventListener("keyup", event => { if (event.key === "ArrowRight") rightPressed = false; if (event.key === "ArrowLeft") leftPressed = false; });
 
         document.getElementById('startButton').addEventListener('click', () => { if (!isRunning) { isRunning = true; draw(); }});
         document.getElementById('stopButton').addEventListener('click', () => { isRunning = false; });
